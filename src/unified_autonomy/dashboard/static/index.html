@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unified Autonomy Dashboard</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Unified Autonomous Systems Platform</p>
+          <h1>Live Autonomy Control</h1>
+          <p class="subtle">Switch controller modes, watch vehicle telemetry, and track run metrics from one operator console.</p>
+        </div>
+        <div class="status-card">
+          <span id="connection-dot" class="dot"></span>
+          <div>
+            <p class="label">System Status</p>
+            <strong id="system-status">Connecting</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="panel control-panel">
+          <div class="panel-head">
+            <div>
+              <p class="label">Controller</p>
+              <h2>Mode Switch</h2>
+            </div>
+            <span id="active-mode" class="pill">reactive</span>
+          </div>
+          <div class="mode-grid">
+            <button data-mode="mpc" class="mode-button">
+              <span>MPC</span>
+              <small>trajectory optimization</small>
+            </button>
+            <button data-mode="rl" class="mode-button">
+              <span>RL</span>
+              <small>learning policy</small>
+            </button>
+            <button data-mode="rrt" class="mode-button">
+              <span>RRT</span>
+              <small>sampling planner</small>
+            </button>
+            <button data-mode="reactive" class="mode-button">
+              <span>Reactive</span>
+              <small>follow-the-gap</small>
+            </button>
+          </div>
+          <p id="mode-message" class="message">Waiting for telemetry.</p>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="label">Run Metrics</p>
+              <h2>Performance</h2>
+            </div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><span>Elapsed</span><strong id="elapsed">0.0s</strong></div>
+            <div class="metric"><span>Avg Speed</span><strong id="avg-speed">0.00 m/s</strong></div>
+            <div class="metric"><span>Max Speed</span><strong id="max-speed">0.00 m/s</strong></div>
+            <div class="metric"><span>Collisions</span><strong id="collisions">0</strong></div>
+          </div>
+        </article>
+
+        <article class="panel telemetry-panel">
+          <div class="panel-head">
+            <div>
+              <p class="label">Vehicle</p>
+              <h2>Telemetry</h2>
+            </div>
+          </div>
+          <div class="telemetry">
+            <div><span>x</span><strong id="pos-x">0.00</strong></div>
+            <div><span>y</span><strong id="pos-y">0.00</strong></div>
+            <div><span>yaw</span><strong id="yaw">0.00</strong></div>
+            <div><span>speed</span><strong id="vehicle-speed">0.00</strong></div>
+            <div><span>cmd speed</span><strong id="cmd-speed">0.00</strong></div>
+            <div><span>cmd steer</span><strong id="cmd-steer">0.00</strong></div>
+          </div>
+        </article>
+
+        <article class="panel event-panel">
+          <div class="panel-head">
+            <div>
+              <p class="label">Operator Log</p>
+              <h2>Mode Requests</h2>
+            </div>
+          </div>
+          <pre id="event-log">Dashboard booting...</pre>
+        </article>
+      </section>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
+

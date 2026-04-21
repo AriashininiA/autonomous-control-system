@@ -1,0 +1,30 @@
+Panels:
+  - Class: rviz_common/Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Enabled: true
+      Name: Grid
+    - Class: rviz_default_plugins/Path
+      Enabled: true
+      Name: Unified Planned Path
+      Topic:
+        Value: /unified/planned_path
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: Unified Goal
+      Marker Topic:
+        Value: /unified/goal
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Unified Obstacles
+      Marker Topic:
+        Value: /unified/obstacles
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: Unified Status
+      Marker Topic:
+        Value: /unified/status
+  Global Options:
+    Fixed Frame: map

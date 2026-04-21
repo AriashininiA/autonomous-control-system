@@ -1,0 +1,76 @@
+project:
+  name: "Unified Autonomous Systems Platform"
+  vehicle: "f1tenth"
+  map_frame: "map"
+  base_frame: "ego_racecar/base_link"
+
+runtime:
+  default_mode: "reactive"
+  control_rate_hz: 20.0
+  stop_on_collision: false
+
+topics:
+  scan: "/scan"
+  odom: "/ego_racecar/odom"
+  drive: "/drive"
+  planned_path: "/unified/planned_path"
+  goal_marker: "/unified/goal"
+  obstacle_markers: "/unified/obstacles"
+  status_marker: "/unified/status"
+
+safety:
+  min_ttc_s: 0.35
+  collision_distance_m: 0.18
+  max_speed_mps: 4.0
+  max_steer_rad: 0.42
+
+assets:
+  map_yaml: "data/maps/levine/levine_blocked.yaml"
+  waypoint_csv: "data/waypoints/waypoints_onsim.csv"
+  rl_policy_path: "models/rl/policy.pt"
+  vision_model_onnx: "data/vision/models/model_78.onnx"
+  vision_model_pt: "data/vision/models/model_78.pt"
+  vision_resource_dir: "data/vision/resource"
+  vision_calibration_dir: "data/vision/calibration"
+
+modes:
+  reactive:
+    enabled: true
+    target_speed_mps: 1.5
+    fov_deg: 70.0
+    bubble_radius_m: 0.6
+    range_clip_m: 3.0
+  rrt:
+    enabled: true
+    goal_ahead_m: 2.0
+    max_iter: 200
+    step_size_m: 0.35
+    target_speed_mps: 1.2
+    lookahead_m: 0.55
+    tracking_controller: "pure_pursuit"
+  mpc:
+    enabled: true
+    horizon: 8
+    dt_s: 0.1
+    tracker: "kinematic_mpc"
+  rl:
+    enabled: false
+    placeholder: true
+    action_space: "ackermann_speed_steer"
+
+metrics:
+  output_dir: "logs"
+  run_tag: "demo"
+  completion_lap_distance_m: 20.0
+  tracking_error_enabled: true
+
+visualization:
+  enabled: true
+  primary: "foxglove"
+  foxglove_bridge_url: "ws://localhost:8765"
+  publish_obstacle_points: true
+  publish_status_text: true
+
+dashboard:
+  enabled: true
+  state_file: "dashboard/state.json"

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>unified_autonomy</name>
+  <version>0.1.0</version>
+  <description>Unified autonomy platform for classical and learning-based control demos.</description>
+  <maintainer email="you@example.com">Ariashi</maintainer>
+  <license>MIT</license>
+
+  <depend>rclpy</depend>
+  <depend>ackermann_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <exec_depend>foxglove_bridge</exec_depend>
+
+  <exec_depend>python3-yaml</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
