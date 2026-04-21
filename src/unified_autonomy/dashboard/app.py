@@ -11,7 +11,7 @@ from unified_autonomy.config import load_config
 from unified_autonomy.dashboard_state import DashboardStateStore, VALID_MODES
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[4]
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 DEFAULT_CONFIG = PROJECT_ROOT / "configs" / "demo.yaml"
 
@@ -57,4 +57,3 @@ def create_app(config_path: str | Path = DEFAULT_CONFIG) -> FastAPI:
 
 
 app = create_app()
-

@@ -1,0 +1,9 @@
+{
+  "mode": "rrt",
+  "elapsed_s": 50.18411712697707,
+  "average_speed_mps": 0.5057363493485347,
+  "max_speed_mps": 0.9903809617098664,
+  "collisions": 0,
+  "success": false,
+  "completion_status": "stopped"
+}

@@ -7,7 +7,7 @@ Foxglove is the primary visualization surface for this portfolio project.
 Terminal 1:
 
 ```bash
-./run_demo.sh --mode reactive --foxglove
+./run_demo.sh --mode reactive --sim --foxglove
 ```
 
 Terminal 2, if you prefer starting the bridge separately:
@@ -31,6 +31,9 @@ ws://localhost:8765
 
 ## Key Topics
 
+- `/map`: occupancy grid from `f1tenth_gym_ros`
+- `/tf`, `/tf_static`: map-to-car and robot model transforms
+- `/ego_robot_description`: F1TENTH URDF for the 3D panel
 - `/scan`: LiDAR scan
 - `/ego_racecar/odom`: vehicle state
 - `/drive`: Ackermann command
@@ -38,4 +41,3 @@ ws://localhost:8765
 - `/unified/goal`: current goal marker
 - `/unified/obstacles`: local obstacle points
 - `/unified/status`: active mode and speed text marker
-

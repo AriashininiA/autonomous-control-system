@@ -4,17 +4,22 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$PROJECT_DIR"
 
+source_setup() {
+  local setup_file="$1"
+  set +u
+  # shellcheck disable=SC1090
+  source "$setup_file"
+  set -u
+}
+
 if [[ -f /opt/ros/humble/setup.bash ]]; then
-  # shellcheck disable=SC1091
-  source /opt/ros/humble/setup.bash
+  source_setup /opt/ros/humble/setup.bash
 elif [[ -f /opt/ros/foxy/setup.bash ]]; then
-  # shellcheck disable=SC1091
-  source /opt/ros/foxy/setup.bash
+  source_setup /opt/ros/foxy/setup.bash
 fi
 
 if [[ -n "${ROS_WS:-}" && -f "$ROS_WS/install/setup.bash" ]]; then
-  # shellcheck disable=SC1090
-  source "$ROS_WS/install/setup.bash"
+  source_setup "$ROS_WS/install/setup.bash"
 fi
 
 PORT="${FOXGLOVE_PORT:-8765}"

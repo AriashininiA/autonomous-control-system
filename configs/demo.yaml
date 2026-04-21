@@ -42,10 +42,11 @@ modes:
     range_clip_m: 3.0
   rrt:
     enabled: true
-    goal_ahead_m: 2.0
-    max_iter: 200
+    goal_ahead_m: 2.5
+    max_iter: 350
     step_size_m: 0.35
-    target_speed_mps: 1.2
+    target_speed_mps: 1.25
+    min_speed_mps: 0.45
     lookahead_m: 0.55
     tracking_controller: "pure_pursuit"
   mpc:

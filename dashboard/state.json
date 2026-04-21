@@ -1,0 +1,32 @@
+{
+  "active_mode": "mpc",
+  "available_modes": [
+    "mpc",
+    "rl",
+    "rrt",
+    "reactive"
+  ],
+  "command": {
+    "speed": 1.6813938488648577,
+    "steering_angle": 0.3870049926354108
+  },
+  "last_error": "",
+  "metrics": {
+    "average_speed_mps": 0.9374843876304736,
+    "collisions": 78,
+    "completion_status": "running",
+    "elapsed_s": 603.0778737069922,
+    "max_speed_mps": 3.042817587408045,
+    "mode": "mpc",
+    "success": false
+  },
+  "requested_mode": "mpc",
+  "status": "running",
+  "updated_at": 1776814556.0082054,
+  "vehicle": {
+    "speed": 0.01600517251650859,
+    "x": 9.004047393798828,
+    "y": 9.397136688232422,
+    "yaw": 9.868575580185279e-05
+  }
+}

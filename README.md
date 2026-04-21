@@ -33,10 +33,10 @@ Ackermann command /drive
 
 ```bash
 cd unified_autonomy_platform
-./run_demo.sh --mode reactive --foxglove
+./run_demo.sh --mode reactive --sim --foxglove
 ```
 
-Open Foxglove Studio and connect to `ws://localhost:8765`.
+This launches the F1TENTH gym bridge, map server, robot model, Foxglove Bridge, and the autonomy controller. Foxglove should open automatically; if it does not, open Foxglove Studio and connect to `ws://localhost:8765`.
 
 Start the product-style web dashboard in a second terminal:
 

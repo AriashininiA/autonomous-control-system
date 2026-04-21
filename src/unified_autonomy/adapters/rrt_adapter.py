@@ -18,14 +18,14 @@ class RRTReactiveAdapter:
         self.planner = LocalRRTPlanner(
             RRTConfig(
                 step_size_m=float(config.get("step_size_m", 0.35)),
-                max_iter=int(config.get("max_iter", 200)),
-                goal_ahead_m=float(config.get("goal_ahead_m", 2.0)),
+                max_iter=int(config.get("max_iter", 350)),
+                goal_ahead_m=float(config.get("goal_ahead_m", 2.5)),
             )
         )
         self.tracker_config = PurePursuitConfig(
             lookahead_m=float(config.get("lookahead_m", 0.55)),
-            max_speed_mps=float(config.get("target_speed_mps", 1.2)),
-            min_speed_mps=float(config.get("min_speed_mps", 0.35)),
+            max_speed_mps=float(config.get("target_speed_mps", 1.25)),
+            min_speed_mps=float(config.get("min_speed_mps", 0.45)),
             max_steer_rad=float(safety.get("max_steer_rad", 0.42)),
         )
 

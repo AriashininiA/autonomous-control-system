@@ -9,12 +9,12 @@ import numpy as np
 @dataclass
 class RRTConfig:
     resolution_m: float = 0.1
-    width: int = 40
-    height: int = 40
+    width: int = 100
+    height: int = 100
     step_size_m: float = 0.35
     goal_tolerance_m: float = 0.5
-    max_iter: int = 200
-    goal_ahead_m: float = 2.0
+    max_iter: int = 350
+    goal_ahead_m: float = 2.5
 
 
 @dataclass
@@ -70,7 +70,9 @@ class LocalRRTPlanner:
 
     def plan(self) -> np.ndarray | None:
         tree = [RRTNode(0.0, 0.0, None)]
-        goal = (self.config.goal_ahead_m, 0.0)
+        goal = self._select_goal()
+        if goal is None:
+            return None
         for _ in range(self.config.max_iter):
             sample = self._sample_free()
             if sample is None:
@@ -84,6 +86,44 @@ class LocalRRTPlanner:
             if math.hypot(new_node.x - goal[0], new_node.y - goal[1]) < self.config.goal_tolerance_m:
                 return self._trace_path(tree, len(tree) - 1)
         return None
+
+    def _select_goal(self) -> tuple[float, float] | None:
+        """
+        Pick a local goal from currently visible free space.
+
+        A fixed straight-ahead goal can be blocked at hallway turns, causing the
+        planner to fail and command a stop. This scores free cells by forward
+        progress, obstacle clearance, and mild center preference so the local
+        planner naturally chooses the open side of a turn.
+        """
+        free = np.argwhere(self.grid == 0)
+        if free.size == 0:
+            return None
+
+        occupied = np.argwhere(self.grid == 100)
+        best: tuple[float, float] | None = None
+        best_score = -float("inf")
+
+        for row, col in free:
+            x = self.origin_x + col * self.config.resolution_m
+            y = self.origin_y + row * self.config.resolution_m
+            if x < 0.4:
+                continue
+            if math.hypot(x, y) > self.config.goal_ahead_m:
+                continue
+
+            if occupied.size > 0:
+                d_cells = np.min((occupied[:, 0] - row) ** 2 + (occupied[:, 1] - col) ** 2)
+                clearance = math.sqrt(float(d_cells)) * self.config.resolution_m
+            else:
+                clearance = 1.0
+
+            score = x + 0.8 * clearance - 0.2 * abs(y)
+            if score > best_score:
+                best_score = score
+                best = (float(x), float(y))
+
+        return best
 
     def _sample_free(self) -> tuple[float, float] | None:
         free = np.argwhere(self.grid == 0)
@@ -132,4 +172,3 @@ class LocalRRTPlanner:
             idx = node.parent
         points.reverse()
         return np.asarray(points, dtype=float)
-

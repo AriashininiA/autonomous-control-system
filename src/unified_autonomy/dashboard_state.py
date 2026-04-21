@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any
@@ -28,7 +29,7 @@ class DashboardStateStore:
 
     def write(self, state: dict[str, Any]) -> None:
         merged = {**self.default_state(), **state, "updated_at": time.time()}
-        tmp = self.path.with_suffix(".tmp")
+        tmp = self.path.with_name(f"{self.path.name}.{os.getpid()}.{time.time_ns()}.tmp")
         with tmp.open("w", encoding="utf-8") as f:
             json.dump(merged, f, indent=2, sort_keys=True)
         tmp.replace(self.path)
@@ -86,4 +87,3 @@ class DashboardStateStore:
             "command": {"speed": 0.0, "steering_angle": 0.0},
             "vehicle": {"x": 0.0, "y": 0.0, "yaw": 0.0, "speed": 0.0},
         }
-

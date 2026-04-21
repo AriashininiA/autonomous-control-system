@@ -1,0 +1,9 @@
+{
+  "mode": "reactive",
+  "elapsed_s": 43.64516940998146,
+  "average_speed_mps": 0.7369474982555783,
+  "max_speed_mps": 1.4604961531275538,
+  "collisions": 26,
+  "success": false,
+  "completion_status": "stopped"
+}
