@@ -11,7 +11,7 @@ MSE @ Upenn | Machine Learning Engineer | BSc @ UCL | Physics & Math
 
 ## Demo
 
-[Watch the autonomous control system demo](auto-system-demo.mp4)
+[Watch the autonomous control system demo](https://github.com/user-attachments/assets/236d6e2d-c778-4ca0-9e30-a07233094824)
 
 ## Highlights
 
