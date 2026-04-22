@@ -1,106 +1,173 @@
-# Unified Autonomous Systems Platform
+# Autonomous Control System
 
-Portfolio-ready integration of classical and learning-based autonomy for F1TENTH-scale racing and drone-control coursework.
+A modular ROS2 autonomy stack for F1TENTH-scale racing simulation. This project integrates classical planning, trajectory tracking, safety constraints, visualization, live mode switching, and metrics logging into one reusable control system.
 
-## Project Positioning
+The goal of this repository is to present autonomy work as a complete engineered system rather than separate lab assignments: common interfaces, shared configuration, repeatable demos, and clear runtime observability.
 
-**Unified Autonomous Systems Platform with Learning-Based and Classical Control** consolidates separate autonomy labs into one modular ROS2 system. The platform runs perception, planning, control, visualization, and evaluation behind a single demo interface, making it possible to compare MPC, RRT/reactive planning, and reinforcement-learning policies under common topics, configs, and metrics.
+## 🧑‍💻 Authors
 
-## Architecture
+**Aria Shi** [GitHub](https://github.com/AriashininiA), [LinkedIn](https://www.linkedin.com/in/aria-xingni-shi)  
+MSE @ Upenn | Machine Learning Engineer | BSc @ UCL | Physics & Math
+
+## Demo
+
+[Watch the autonomous control system demo](auto-system-demo.mp4)
+
+## Highlights
+
+- Unified multiple autonomy approaches under one ROS2 controller interface.
+- Implemented live switching between reactive, RRT, MPC, and RL-placeholder modes.
+- Built a Foxglove-ready demo pipeline for inspecting planner output, vehicle state, and drive commands.
+- Added a FastAPI dashboard for mode control and runtime status.
+- Logged repeatable run metrics as CSV traces and JSON summaries.
+- Refactored coursework algorithms into reusable Python modules with shared configuration and safety limits.
+
+## System Overview
 
 ```text
-Sensors / Simulator
-  /scan, /ego_racecar/odom, camera topics
+F1TENTH simulator
+  -> /scan
+  -> /ego_racecar/odom
         |
         v
-main_demo.py orchestrator
-  - subscribes to state and perception topics
-  - selects one autonomy mode
-  - calls the mode adapter through a shared interface
-  - publishes /drive
-  - publishes visualization markers and planned paths
-  - records metrics
-        |
-        +--> MPC adapter         runs migrated lab-8 MPC math
-        +--> RRT/reactive adapter runs migrated lab-6 RRT + lab-4 follow-gap
-        +--> RL adapter          placeholder for project 9 policy
+unified_autonomy.main_demo
+  -> selected controller mode
+     - reactive follow-the-gap
+     - local RRT + pure pursuit
+     - kinematic MPC
+     - RL policy placeholder
         |
         v
-Ackermann command /drive
+  -> /drive
+  -> /unified/planned_path
+  -> /unified/goal
+  -> /unified/obstacles
+  -> /unified/status
+  -> logs/*.csv and logs/*_summary.json
+```
+
+## Environment
+
+This project is designed to run in:
+
+1. Ubuntu VM
+2. [ROS2 Humble](https://docs.ros.org/en/humble/Installation.html)
+3. [f1tenth_gym_ros](https://github.com/f1tenth/f1tenth_gym_ros.git)
+4. Python dependencies from `requirements.txt`
+
+Typical workspace layout:
+
+```text
+roboracer_ws/
+  src/
+    f1tenth_gym_ross/
+    autonomous-control-system/
+```
+
+Install Python dependencies from this repository:
+
+```bash
+cd roboracer_ws/src/autonomous-control-system
+python3 -m pip install -r requirements.txt
+```
+
+Build and source the ROS workspace:
+
+```bash
+cd roboracer_ws
+colcon build --symlink-install
+source install/setup.bash
 ```
 
 ## Quick Start
 
+Launch the simulator, controller, and Foxglove bridge:
+
 ```bash
-cd unified_autonomy_platform
+cd roboracer_ws/src/autonomous-control-system
 ./run_demo.sh --mode reactive --sim --foxglove
 ```
 
-This launches the F1TENTH gym bridge, map server, robot model, Foxglove Bridge, and the autonomy controller. Foxglove should open automatically; if it does not, open Foxglove Studio and connect to `ws://localhost:8765`.
+Open Foxglove Studio and connect to:
 
-Start the product-style web dashboard in a second terminal:
+```text
+ws://localhost:8765
+```
+
+Start the dashboard in a second terminal:
 
 ```bash
-pip install -r requirements.txt
+cd roboracer_ws/src/autonomous-control-system
 ./run_dashboard.sh
 ```
 
-Then open `http://127.0.0.1:8080`. The dashboard writes requested mode changes to `dashboard/state.json`; the ROS orchestrator polls that file and switches between MPC, RL, RRT, and reactive modes live.
+Open:
 
-Other modes:
-
-```bash
-./run_demo.sh --mode mpc
-./run_demo.sh --mode rrt
-./run_demo.sh --mode rl
+```text
+http://127.0.0.1:8080
 ```
 
-The RL adapter is intentionally a placeholder until the ninth RL project is finalized.
+The dashboard can change the active autonomy mode during the demo.
 
-## Folder Responsibilities
+## Autonomy Modes
 
-- `run_demo.sh`: one-command demo runner; sources ROS2, optionally launches sim/Foxglove Bridge, then starts the orchestrator.
-- `configs/demo.yaml`: single source of truth for topics, selected mode, safety limits, assets, metrics, and visualization.
-- `src/unified_autonomy/main_demo.py`: central ROS2 orchestrator for perception -> planning -> control.
-- `src/unified_autonomy/interfaces.py`: shared dataclasses and controller interface.
-- `src/unified_autonomy/adapters/`: mode-specific adapters for MPC, RL, RRT, and reactive follow-the-gap.
-- `src/unified_autonomy/metrics.py`: collision/speed/time/tracking metrics logger.
-- `src/unified_autonomy/visualization.py`: Foxglove-compatible path, goal, obstacle, and status publishers.
-- `foxglove/`: Foxglove setup notes and recommended topic layout.
-- `src/unified_autonomy/dashboard/`: FastAPI dashboard and static product UI for mode switching and metrics.
-- `src/unified_autonomy/dashboard_state.py`: file-backed bridge between the dashboard and ROS node.
-- `data/maps`, `data/waypoints`: canonical portfolio assets copied or symlinked from the original labs.
-- `logs`: generated metrics CSV and JSON summaries.
+| Mode | Status | Description |
+|---|---:|---|
+| `reactive` | Working | LiDAR follow-the-gap controller for fast obstacle-aware driving. |
+| `rrt` | Working | Local RRT planner with pure-pursuit tracking of the generated path. |
+| `mpc` | Working | Kinematic MPC tracker using waypoint assets from `data/waypoints`. |
+| `rl` | Placeholder | Safe-stop adapter reserved for a future trained reinforcement-learning policy. |
 
-## Migration Map From Coursework
+## Repository Structure
 
-Keep the original lab repos as archived references. The reusable algorithms and demo assets now live inside this platform:
-
-- MPC math from `lab-8-model-predictive-control-team7/mpc/mpc/mpc_node.py` is refactored into `src/unified_autonomy/control/mpc_tracker.py`.
-- Follow-the-gap from `lab-4-follow-the-gap-team7/gap_follow/gap_follow/reactive_node.py` is refactored into `src/unified_autonomy/control/reactive_follow_gap.py`.
-- RRT from `lab-6-motion-planning-team7/lab7_pkg/scripts/rrt_node.py` is refactored into `src/unified_autonomy/planning/local_rrt.py`.
-- Pure pursuit from `lab-5-slam-and-pure-pursuit-team7/pure_pursuit/...` is refactored into `src/unified_autonomy/tracking/pure_pursuit.py`.
-- Waypoint tools from `lab-5-slam-and-pure-pursuit-team7/tools/` are copied under `scripts/waypoints/`.
-- Demo maps and waypoint CSVs are copied under `data/maps/` and `data/waypoints/`.
-- Vision files from `lab-7-vision-lab-team7/src/` are copied under `src/unified_autonomy/perception/vision/` as optional perception utilities.
-- Vision model/resource assets are copied under `data/vision/`, including `model_78.onnx`, its external `model_78.onnx.data`, `model_78.pt`, calibration images, and demo images.
-- Vision training/conversion utilities are under `tools/vision/`, separate from runtime code and assets.
-- Add project 9 RL policy later under `models/rl/` and wire it through `RLAdapter`.
+| Path | Purpose |
+|---|---|
+| `configs/demo.yaml` | Main configuration for topics, modes, safety limits, assets, metrics, dashboard, and visualization. |
+| `run_demo.sh` | Launches the controller with optional simulator and Foxglove bridge. |
+| `run_dashboard.sh` | Starts the FastAPI dashboard. |
+| `src/unified_autonomy/main_demo.py` | Main ROS2 orchestrator for subscriptions, mode selection, safety clipping, publishing, visualization, and metrics. |
+| `src/unified_autonomy/interfaces.py` | Shared dataclasses and controller interface. |
+| `src/unified_autonomy/adapters/` | Mode adapters for reactive, RRT, MPC, and RL. |
+| `src/unified_autonomy/control/` | Follow-the-gap and MPC control logic. |
+| `src/unified_autonomy/planning/local_rrt.py` | Local RRT planner. |
+| `src/unified_autonomy/tracking/pure_pursuit.py` | Pure-pursuit path tracker. |
+| `src/unified_autonomy/dashboard/` | Dashboard API and static UI. |
+| `src/unified_autonomy/metrics.py` | CSV and JSON run logging. |
+| `data/maps/` | Demo map assets. |
+| `data/waypoints/` | Waypoint CSV files for tracking and MPC. |
+| `data/vision/` | Optional vision model, calibration, and image resources. |
+| `tools/vision/` | Vision training and conversion utilities. |
+| `scripts/waypoints/` | Waypoint planning, smoothing, and overlay tools. |
+| `docs/autonomy-notes/README.md` | Placeholder for knowledge notes on pure pursuit, gap-follow, RRT, MPC, and RL. |
 
 ## Metrics
 
-Each run logs:
+Each run writes a CSV trace and JSON summary under `logs/`.
 
-- mode
+Tracked fields include:
+
+- active mode
 - elapsed time
-- average speed
-- max speed
-- collisions
+- vehicle pose
+- measured speed
+- commanded speed
+- commanded steering
+- collision count
 - completion status
-- optional tracking error when a reference path is available
 
-## Portfolio Framing
+## Implementation Notes
 
-Use this project as one integrated autonomy stack, not as a list of assignments:
+This project consolidates and refactors algorithms from earlier autonomy labs into a single system:
 
-> Built a modular ROS2 autonomy platform that unifies LiDAR perception, local planning, trajectory tracking, learning-based policies, visualization, and quantitative evaluation. Implemented mode switching between MPC, RRT/reactive planning, and RL controllers under a shared interface, enabling controller comparison in simulation with consistent metrics.
+- Follow-the-gap control -> `src/unified_autonomy/control/reactive_follow_gap.py`
+- RRT planning -> `src/unified_autonomy/planning/local_rrt.py`
+- Pure pursuit tracking -> `src/unified_autonomy/tracking/pure_pursuit.py`
+- MPC tracking -> `src/unified_autonomy/control/mpc_tracker.py`
+- Map and waypoint assets -> `data/maps/` and `data/waypoints/`
+- Vision runtime assets -> `data/vision/`
+
+Adapters return a common `ControlCommand`, and the main ROS node owns safety clipping, publishing, visualization, dashboard state, and metrics. This keeps each autonomy strategy interchangeable while preserving one consistent runtime.
+
+## Knowledge Notes
+
+Knowledge and implementation notes for pure pursuit, gap-follow, RRT, MPC, and RL are collected separately in `docs/autonomy-notes/README.md`.
